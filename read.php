@@ -1,6 +1,5 @@
 <?php
 
-$rating = $_GET["rating"];
 
 // connection
 $conn = new mysqli("localhost","root","","logindb");
@@ -11,9 +10,13 @@ if(!$conn) {
 }
 
 // read operation
-$sql = "SELECT * FROM movies WHERE rating >= $rating";
-echo $sql."<br>";
-$result = $conn->query($sql);  // associate array
+$sql = "SELECT * FROM movies WHERE rating >= ?";
+$statement = $conn->prepare($sql);
+$statement->bind_param("i",$rating);
+$rating = $_GET["rating"];
+$statement->execute();
+
+$result = $statement->get_result();  // associate array
 
 if($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
